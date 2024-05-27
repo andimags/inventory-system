@@ -9,3 +9,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('products', ProductController::class)->only(['index', 'store']);
+Route::delete('products', [ProductController::class, 'destroy'])->name('products.delete');

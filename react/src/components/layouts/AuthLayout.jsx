@@ -4,7 +4,7 @@ import Sidebar from "../Sidebar";
 const AuthLayout = () => {
     return (
         <>
-            <div className="grid grid-cols-[auto,1fr]">
+            <div className="flex">
                 <div>
                     <Sidebar />
                 </div>
