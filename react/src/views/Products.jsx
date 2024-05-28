@@ -81,9 +81,8 @@ const Products = () => {
             footer: (info) => info.column.id,
         }),
         columnHelper.accessor("price", {
-            cell: (info) => info.renderValue(),
+            cell: (info) => info.renderValue().toFixed(2),
             footer: (info) => info.column.id,
-            enableColumnFilter: false,
         }),
         columnHelper.accessor("action", {
             cell: (info) => (
@@ -285,11 +284,14 @@ const Products = () => {
                             deleteProducts(Object.keys(rowSelection));
                         }}
                     >
-                        Delete all &nbsp;
-                        {Object.keys(rowSelection).length != 0 && (
-                            <Badge color="info">
-                                {Object.keys(rowSelection).length}
-                            </Badge>
+                        Delete all
+                        {Object.keys(rowSelection).length !== 0 && (
+                            <>
+                                &nbsp;
+                                <Badge color="info">
+                                    {Object.keys(rowSelection).length}
+                                </Badge>
+                            </>
                         )}
                     </Button>
                 </div>
