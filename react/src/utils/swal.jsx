@@ -25,5 +25,6 @@ export const showAlert = (title, text, icon) => {
         title: title,
         text: text,
         icon: icon,
+        timer: 2000,
     });
 };

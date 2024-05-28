@@ -1,15 +1,22 @@
 import { Button, Label, Modal, TextInput, Textarea } from "flowbite-react";
-import { useState } from "react";
 
-export function ProductModal({ openModal, setOpenModal, addProducts }) {
-    const [productData, setProductData] = useState({
-        name: "",
-        description: "",
-        quantity: 0,
-    });
-
+export function ProductModal({
+    openModal,
+    setOpenModal,
+    productFormData,
+    setProductFormData,
+    addProducts,
+    updateProduct,
+}) {
     const handleSubmitForm = () => {
-        addProducts(productData);
+        if (productFormData.method == "POST") {
+            console.log("POST");
+            addProducts(productFormData);
+        }
+        if (productFormData.method == "PUT") {
+            console.log("PUT");
+            updateProduct(productFormData);
+        }
     };
 
     return (
@@ -31,11 +38,12 @@ export function ProductModal({ openModal, setOpenModal, addProducts }) {
                                 type="text"
                                 placeholder="Product name"
                                 onChange={(e) => {
-                                    setProductData({
-                                        ...productData,
+                                    setProductFormData({
+                                        ...productFormData,
                                         name: e.target.value,
                                     });
                                 }}
+                                value={productFormData.name}
                             />
                         </div>
                         <div>
@@ -51,11 +59,12 @@ export function ProductModal({ openModal, setOpenModal, addProducts }) {
                                 required
                                 rows={4}
                                 onChange={(e) => {
-                                    setProductData({
-                                        ...productData,
+                                    setProductFormData({
+                                        ...productFormData,
                                         description: e.target.value,
                                     });
                                 }}
+                                value={productFormData.description}
                             />
                         </div>
                         <div>
@@ -67,11 +76,12 @@ export function ProductModal({ openModal, setOpenModal, addProducts }) {
                                 type="text"
                                 placeholder="Quantity"
                                 onChange={(e) => {
-                                    setProductData({
-                                        ...productData,
+                                    setProductFormData({
+                                        ...productFormData,
                                         quantity: e.target.value,
                                     });
                                 }}
+                                value={productFormData.quantity}
                             />
                         </div>
                     </form>

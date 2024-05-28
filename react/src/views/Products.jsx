@@ -18,6 +18,21 @@ import { hideSwal, showAlert, showLoading } from "./../utils/swal";
 
 const Products = () => {
     const [products, setProducts] = useState([]);
+    const [productFormData, setProductFormData] = useState({
+        method: "",
+        id: "",
+        name: "",
+        description: "",
+        quantity: 0,
+    });
+    const clearProductFormData = () => {
+        setProductFormData({
+            id: "",
+            name: "",
+            description: "",
+            quantity: 0,
+        });
+    };
     const [openModal, setOpenModal] = useState(false);
     const [rowSelection, setRowSelection] = React.useState({});
     const [pagination, setPagination] = useState({
@@ -77,6 +92,13 @@ const Products = () => {
                         href="#"
                         className="font-medium text-cyan-600 hover:underline dark:text-cyan-500 mr-4"
                         data-id={info.row.id}
+                        onClick={() => {
+                            setProductFormData({
+                                id: info.row.id,
+                                ...productFormData,
+                            });
+                            editProduct(info.row.original);
+                        }}
                     >
                         Edit
                     </a>
@@ -138,8 +160,9 @@ const Products = () => {
     const addProducts = (payload) => {
         axiosClient
             .post("/products", payload)
-            .then(() => {
-                setProducts([payload, ...products]);
+            .then(({ data }) => {
+                const newProduct = { ...payload, id: data.data.id };
+                setProducts([newProduct, ...products]);
                 showAlert(
                     "Success",
                     "Product has been added successfully!",
@@ -184,22 +207,60 @@ const Products = () => {
             });
     };
 
+    const editProduct = (product) => {
+        setProductFormData({
+            id: product.id,
+            method: "PUT",
+            name: product.name,
+            description: product.description,
+            quantity: product.quantity,
+        });
+
+        setOpenModal(true);
+    };
+
+    const updateProduct = (payload) => {
+        console.log(payload);
+        axiosClient
+            .put("/products/" + productFormData.id, payload)
+            .then(() => {
+                const newProducts = products.map((product) => {
+                    return product.id == payload.id ? payload : product;
+                });
+                setProducts(newProducts);
+                showAlert(
+                    "Success",
+                    "Product has been updated successfully!",
+                    "success"
+                );
+            })
+            .catch((e) => {
+                console.log(e);
+            })
+            .finally(() => {
+                setOpenModal(false);
+            });
+    };
+
     useEffect(() => {
         getProducts();
     }, []);
 
     useEffect(() => {
-        console.log(rowSelection);
-    }, [rowSelection]);
+        console.log(products);
+    }, [products]);
 
     return (
         <>
             <ProductModal
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                productFormData={productFormData}
+                setProductFormData={setProductFormData}
                 addProducts={addProducts}
+                updateProduct={updateProduct}
             />
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900">
                     Products List
                 </h2>
@@ -208,6 +269,11 @@ const Products = () => {
                         color="blue"
                         className="mr-2"
                         onClick={() => {
+                            clearProductFormData();
+                            setProductFormData({
+                                ...productFormData,
+                                method: "POST",
+                            });
                             setOpenModal(true);
                         }}
                     >
