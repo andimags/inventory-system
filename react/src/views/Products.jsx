@@ -8,7 +8,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
-import { Button, Table } from "flowbite-react";
+import { Badge, Button, Table } from "flowbite-react";
 import React, { useEffect, useReducer, useState } from "react";
 import Filter from "../components/Filter";
 import IndeterminateCheckbox from "../components/IndeterminateCheckbox";
@@ -20,12 +20,12 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [rowSelection, setRowSelection] = React.useState({});
-
-    const columnHelper = createColumnHelper();
     const [pagination, setPagination] = useState({
         pageIndex: 0,
         pageSize: 10,
     });
+
+    const columnHelper = createColumnHelper();
 
     const columns = [
         {
@@ -155,6 +155,9 @@ const Products = () => {
     };
 
     const deleteProducts = (ids) => {
+        ids = ids.map((id) => {
+            return Number(id);
+        });
         axiosClient
             .delete("/products", {
                 data: {
@@ -162,11 +165,11 @@ const Products = () => {
                 },
             })
             .then((data) => {
-                setProducts(
-                    products.filter((product) => {
-                        return !ids.includes(product.id);
-                    })
-                );
+                const newProducts = products.filter((product) => {
+                    return !ids.includes(product.id);
+                });
+                setProducts(newProducts);
+                setRowSelection({});
                 showAlert(
                     "Success",
                     "Product has been deleted successfully!",
@@ -200,14 +203,30 @@ const Products = () => {
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900">
                     Products List
                 </h2>
-                <Button
-                    color="blue"
-                    onClick={() => {
-                        setOpenModal(true);
-                    }}
-                >
-                    Add product
-                </Button>
+                <div className="flex">
+                    <Button
+                        color="blue"
+                        className="mr-2"
+                        onClick={() => {
+                            setOpenModal(true);
+                        }}
+                    >
+                        Add product
+                    </Button>
+                    <Button
+                        color="blue"
+                        onClick={() => {
+                            deleteProducts(Object.keys(rowSelection));
+                        }}
+                    >
+                        Delete all &nbsp;
+                        {Object.keys(rowSelection).length != 0 && (
+                            <Badge color="info">
+                                {Object.keys(rowSelection).length}
+                            </Badge>
+                        )}
+                    </Button>
+                </div>
             </div>
 
             <div className="overflow-x-auto">
